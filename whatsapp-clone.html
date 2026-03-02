@@ -204,20 +204,23 @@
   .chat-item.active { background: var(--bg-wash-inset); }
 
   .chat-avatar {
-    width: 48px;
-    height: 48px;
+    width: 49px;
+    height: 49px;
     border-radius: 50%;
-    background: #D9DBDF;
+    background: #EDEDED;
+    border: 1px solid #D4D4D4;
     flex-shrink: 0;
     display: flex;
     align-items: center;
     justify-content: center;
     overflow: hidden;
   }
-  .chat-avatar svg { width: 28px; height: 28px; fill: #FFFFFF; }
+  .chat-avatar svg { width: 26px; height: 26px; fill: #8D8D8D; }
   .chat-avatar.wa {
-    background: var(--accent);
+    background: #25D366;
+    border: none;
   }
+  .chat-avatar.wa svg { fill: #FFFFFF; }
 
   .chat-info {
     flex: 1;
@@ -332,7 +335,8 @@
     position: relative;
     z-index: 2;
   }
-  .right-header .chat-avatar { width: 40px; height: 40px; min-width: 40px; }
+  .right-header .chat-avatar { width: 40px; height: 40px; min-width: 40px; min-height: 40px; }
+  .right-header .chat-avatar svg { width: 22px; height: 22px; }
   .right-header .contact-info { flex: 1; min-width: 0; }
   .right-header .contact-name {
     font-size: 16px;
