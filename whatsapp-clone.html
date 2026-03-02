@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WhatsApp Web</title>
+<style>
+  :root {
+    --accent: #1DAA61;
+    --accent-deemphasized: #D9FDD3;
+    --accent-emphasized: #15603E;
+    --app-wash: #DBD8D4;
+    --bg-wash-plain: #FFFFFF;
+    --bg-wash-inset: #F7F5F3;
+    --surface-default: #FFFFFF;
+    --surface-highlight: rgba(194,189,184,.15);
+    --surface-pressed: rgba(17,27,33,.2);
+    --content-default: #0A1014;
+    --content-deemphasized: #5B6368;
+    --content-disabled: #B3B9BD;
+    --content-link: #0063CB;
+    --content-read: #007BFC;
+    --lines-divider: rgba(17,27,33,.1);
+    --bubble-outgoing: #D9FDD3;
+    --bubble-incoming: #FFFFFF;
+    --bubble-system: rgba(255,255,255,.9);
+    --chat-wallpaper: #EFE9E0;
+    --chat-wallpaper-fg: #E5DBCD;
+    --chat-composer: #FFFFFF;
+    --chat-tray: #F7F5F3;
+    --nav-bar: #FFFFFF;
+    --bubble-deemphasized: rgba(17,27,33,.5);
+    --status-seen: #C2BDB8;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: "SF Pro Text", "SF Pro Icons", system-ui, -apple-system, "Segoe UI", "Helvetica Neue", Helvetica, "Lucida Grande", Arial, sans-serif;
+    font-size: 16px;
+    line-height: 16px;
+    color: var(--content-default);
+    background: var(--app-wash);
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  .app {
+    display: flex;
+    height: 100vh;
+    width: 100%;
+  }
+
+  /* ===== LEFT NAV ICON BAR ===== */
+  .nav-bar {
+    width: 64px;
+    min-width: 64px;
+    background: var(--bg-wash-inset);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 12px 0;
+    gap: 4px;
+    border-right: 1px solid var(--lines-divider);
+  }
+  .nav-bar .nav-spacer { flex: 1; }
+  .nav-btn {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--content-deemphasized);
+    transition: background .15s;
+  }
+  .nav-btn:hover { background: var(--surface-highlight); }
+  .nav-btn.active { background: var(--surface-highlight); color: var(--content-default); }
+  .nav-btn svg { width: 24px; height: 24px; fill: currentColor; }
+
+  /* ===== LEFT PANEL ===== */
+  .left-panel {
+    width: 394px;
+    min-width: 340px;
+    display: flex;
+    flex-direction: column;
+    background: var(--surface-default);
+    border-right: 1px solid var(--lines-divider);
+  }
+
+  /* Header */
+  .left-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 12px;
+    background: var(--bg-wash-inset);
+    min-height: 64px;
+  }
+  .left-header .logo {
+    font-size: 22px;
+    font-weight: 500;
+    color: var(--accent);
+    line-height: 28px;
+  }
+  .left-header .actions { display: flex; gap: 4px; }
+  .icon-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--content-deemphasized);
+    transition: background .15s;
+  }
+  .icon-btn:hover { background: var(--surface-highlight); }
+  .icon-btn svg { width: 20px; height: 20px; fill: currentColor; }
+
+  /* Search */
+  .search-wrap {
+    padding: 8px 12px;
+    background: var(--surface-default);
+  }
+  .search-box {
+    display: flex;
+    align-items: center;
+    background: var(--bg-wash-inset);
+    border-radius: 10px;
+    padding: 0 12px;
+    height: 36px;
+    gap: 12px;
+  }
+  .search-box svg { width: 16px; height: 16px; fill: var(--content-deemphasized); flex-shrink: 0; }
+  .search-box input {
+    border: none;
+    outline: none;
+    background: transparent;
+    font-size: 15px;
+    line-height: 20px;
+    color: var(--content-default);
+    width: 100%;
+    font-family: inherit;
+  }
+  .search-box input::placeholder { color: var(--content-deemphasized); }
+
+  /* Filters */
+  .filters {
+    display: flex;
+    gap: 8px;
+    padding: 8px 16px;
+  }
+  .filter-tab {
+    padding: 0 12px;
+    height: 32px;
+    border-radius: 9999px;
+    border: none;
+    font-size: 13.3px;
+    font-family: inherit;
+    cursor: pointer;
+    background: var(--bg-wash-inset);
+    color: rgba(0,0,0,.6);
+    transition: all .15s;
+  }
+  .filter-tab:hover { background: var(--surface-highlight); }
+  .filter-tab.active {
+    background: var(--accent-deemphasized);
+    color: var(--accent-emphasized);
+  }
+  .filter-more {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: none;
+    background: var(--bg-wash-inset);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--content-deemphasized);
+  }
+
+  /* Chat List */
+  .chat-list {
+    flex: 1;
+    overflow-y: auto;
+  }
+  .chat-item {
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+    height: 72px;
+    cursor: pointer;
+    transition: background .1s;
+    gap: 14px;
+  }
+  .chat-item:hover { background: var(--surface-highlight); }
+  .chat-item.active { background: var(--bg-wash-inset); }
+
+  .chat-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: #D9DBDF;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+  .chat-avatar svg { width: 28px; height: 28px; fill: #FFFFFF; }
+  .chat-avatar.wa {
+    background: var(--accent);
+  }
+
+  .chat-info {
+    flex: 1;
+    min-width: 0;
+    border-bottom: 1px solid var(--lines-divider);
+    padding: 12px 0;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  .chat-info-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+  }
+  .chat-name {
+    font-size: 16px;
+    line-height: 24px;
+    font-weight: 400;
+    color: var(--content-default);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .chat-time {
+    font-size: 12px;
+    line-height: 16px;
+    color: var(--content-deemphasized);
+    flex-shrink: 0;
+    margin-left: 8px;
+  }
+  .chat-preview {
+    font-size: 14px;
+    line-height: 20px;
+    color: rgba(0,0,0,.6);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-top: 2px;
+    display: flex;
+    align-items: center;
+    gap: 3px;
+  }
+  .check-icon { display: inline-flex; align-items: center; }
+  .check-icon svg { width: 18px; height: 18px; }
+  .check-icon.read svg { color: var(--content-read); }
+  .check-icon.sent svg { color: var(--content-deemphasized); }
+
+  /* E2E notice */
+  .e2e-notice {
+    padding: 16px;
+    text-align: center;
+    font-size: 12px;
+    color: var(--content-deemphasized);
+    border-top: 1px solid var(--lines-divider);
+  }
+  .e2e-notice a { color: var(--accent); text-decoration: none; }
+
+  /* Bottom link */
+  .bottom-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px;
+    border-top: 1px solid var(--lines-divider);
+    cursor: pointer;
+  }
+  .bottom-link:hover { background: var(--surface-highlight); }
+  .bottom-link-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .bottom-link-icon svg { width: 24px; height: 24px; fill: #FFF; }
+  .bottom-link-text { font-size: 14px; color: var(--accent); }
+
+  /* ===== RIGHT PANEL ===== */
+  .right-panel {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    background: var(--chat-wallpaper);
+    position: relative;
+  }
+  .right-panel::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    opacity: 0.06;
+    background-image: url("wa-doodle.png");
+    background-size: 412.5px 749.25px;
+    background-repeat: repeat;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Right Header */
+  .right-header {
+    display: flex;
+    align-items: center;
+    padding: 10px 16px;
+    min-height: 64px;
+    background: var(--surface-default);
+    border-bottom: 1px solid var(--lines-divider);
+    gap: 14px;
+    position: relative;
+    z-index: 2;
+  }
+  .right-header .chat-avatar { width: 40px; height: 40px; min-width: 40px; }
+  .right-header .contact-info { flex: 1; min-width: 0; }
+  .right-header .contact-name {
+    font-size: 16px;
+    line-height: 21px;
+    font-weight: 400;
+    color: var(--content-default);
+  }
+  .right-header .contact-status {
+    font-size: 13px;
+    line-height: 20px;
+    color: rgba(0,0,0,.6);
+  }
+  .right-header .actions { display: flex; gap: 4px; }
+
+  /* Chat Area */
+  .chat-area {
+    flex: 1;
+    background: transparent;
+    position: relative;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    z-index: 1;
+  }
+
+  /* Wallpaper doodle pattern is on .right-panel::before */
+
+  .messages {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 20px 60px;
+    position: relative;
+    z-index: 1;
+    gap: 2px;
+  }
+
+  /* System message */
+  .msg-system {
+    align-self: center;
+    background: var(--bubble-system);
+    padding: 4px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    line-height: 16px;
+    color: rgba(0,0,0,.6);
+    text-align: center;
+    margin: 4px 0;
+    box-shadow: rgba(0,0,0,.06) 0 0 1px 1px, rgba(0,0,0,.05) 0 1px 0 0;
+  }
+
+  /* Date label */
+  .msg-date {
+    align-self: center;
+    background: var(--bubble-system);
+    padding: 4px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 545;
+    line-height: 16px;
+    color: rgba(0,0,0,.6);
+    margin: 8px 0;
+    box-shadow: rgba(0,0,0,.06) 0 0 1px 1px, rgba(0,0,0,.05) 0 1px 0 0;
+  }
+
+  /* Bubbles */
+  .msg {
+    max-width: 65%;
+    display: flex;
+    flex-direction: column;
+  }
+  .msg-out { align-self: flex-end; }
+  .msg-in { align-self: flex-start; }
+
+  .bubble {
+    padding: 6px 7px 8px 9px;
+    border-radius: 7.5px;
+    box-shadow: 0 1px .5px rgba(11,20,26,.13);
+    position: relative;
+    display: inline-block;
+  }
+  .msg-out .bubble {
+    background: var(--bubble-outgoing);
+    border-top-right-radius: 0;
+    position: relative;
+  }
+  .msg-out .bubble::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: -8px;
+    width: 8px;
+    height: 13px;
+    background: var(--bubble-outgoing);
+    clip-path: polygon(0 0, 0 100%, 100% 0);
+  }
+  .msg-in .bubble {
+    background: var(--bubble-incoming);
+    border-top-left-radius: 0;
+    position: relative;
+  }
+  .msg-in .bubble::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -8px;
+    width: 8px;
+    height: 13px;
+    background: var(--bubble-incoming);
+    clip-path: polygon(100% 0, 0 0, 100% 100%);
+  }
+
+  .bubble-text {
+    font-size: 14px;
+    line-height: 20px;
+    color: #0A0A0A;
+    display: inline;
+  }
+  .bubble-meta {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    float: right;
+    margin: 4px 0 -4px 12px;
+    line-height: 15px;
+  }
+  .bubble-time {
+    font-size: 11px;
+    line-height: 15px;
+    color: rgba(0,0,0,.6);
+  }
+  .bubble-check svg {
+    width: 16px;
+    height: 11px;
+    color: var(--content-read);
+  }
+
+  /* Footer / Composer */
+  .composer {
+    display: flex;
+    align-items: center;
+    padding: 6px 12px;
+    background: transparent;
+    min-height: 64px;
+    gap: 2px;
+    position: relative;
+    z-index: 1;
+  }
+  .composer .icon-btn { color: var(--content-default); flex-shrink: 0; }
+  .composer-input-wrap {
+    flex: 1;
+    background: var(--chat-composer);
+    border-radius: 26px;
+    padding: 5px;
+    min-height: 52px;
+    display: flex;
+    align-items: center;
+    box-shadow: rgba(0,0,0,.12) 0 1px 6px;
+  }
+  .composer-input {
+    border: none;
+    outline: none;
+    background: transparent;
+    font-size: 15px;
+    line-height: 22px;
+    color: var(--content-default);
+    width: 100%;
+    font-family: inherit;
+    padding: 0 7px;
+  }
+  .composer-input::placeholder { color: var(--content-deemphasized); }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- ===== LEFT NAV ICON BAR ===== -->
+  <nav class="nav-bar">
+    <button class="nav-btn active" title="Чаты">
+      <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H5.2L4 17.2V4h16v12z"/></svg>
+    </button>
+    <button class="nav-btn" title="Статус">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2" stroke-dasharray="4 2"/></svg>
+    </button>
+    <button class="nav-btn" title="Сообщества">
+      <svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+    </button>
+    <div class="nav-spacer"></div>
+    <button class="nav-btn" title="Настройки">
+      <svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 00.12-.61l-1.92-3.32a.49.49 0 00-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.48.48 0 00-.48-.41h-3.84a.48.48 0 00-.48.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96a.49.49 0 00-.59.22L2.74 8.87a.48.48 0 00.12.61l2.03 1.58c-.05.3-.07.62-.07.94s.02.64.07.94l-2.03 1.58a.49.49 0 00-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.26.41.48.41h3.84c.24 0 .44-.17.48-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6A3.6 3.6 0 1112 8.4a3.6 3.6 0 010 7.2z"/></svg>
+    </button>
+    <button class="nav-btn" title="Профиль">
+      <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+    </button>
+  </nav>
+
+  <!-- ===== LEFT PANEL ===== -->
+  <aside class="left-panel">
+    <!-- Header -->
+    <div class="left-header">
+      <span class="logo">WhatsApp</span>
+      <div class="actions">
+        <button class="icon-btn" title="Новый чат">
+          <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+        </button>
+        <button class="icon-btn" title="Меню">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Search -->
+    <div class="search-wrap">
+      <div class="search-box">
+        <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0016 9.5 6.5 6.5 0 109.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+        <input type="text" placeholder="Поиск или новый чат">
+      </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="filters">
+      <button class="filter-tab active">Все</button>
+      <button class="filter-tab">Непрочитанные</button>
+      <button class="filter-tab">Избранные</button>
+      <button class="filter-more">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M7 10l5 5 5-5z"/></svg>
+      </button>
+    </div>
+
+    <!-- Chat List -->
+    <div class="chat-list">
+      <!-- Chat 1 - active -->
+      <div class="chat-item active">
+        <div class="chat-avatar">
+          <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+        </div>
+        <div class="chat-info">
+          <div class="chat-info-top">
+            <span class="chat-name">+7 915 085-38-32 (Вы)</span>
+            <span class="chat-time">03:18</span>
+          </div>
+          <div class="chat-preview">
+            <span class="check-icon read"><svg viewBox="0 0 18 18" fill="none"><path fill="currentColor" d="M17.394,5.035l-0.57-0.444c-0.188-0.147-0.462-0.113-0.609,0.076l-6.39,8.198c-0.147,0.188-0.406,0.206-0.577,0.039l-0.427-0.388c-0.171-0.167-0.431-0.15-0.578,0.038L7.792,13.13c-0.147,0.188-0.128,0.478,0.043,0.645l1.575,1.51c0.171,0.167,0.43,0.149,0.577-0.039l7.483-9.602C17.617,5.456,17.582,5.182,17.394,5.035z M12.502,5.035l-0.57-0.444c-0.188-0.147-0.462-0.113-0.609,0.076l-6.39,8.198c-0.147,0.188-0.406,0.206-0.577,0.039l-2.614-2.556c-0.171-0.167-0.447-0.164-0.614,0.007l-0.505,0.516c-0.167,0.171-0.164,0.447,0.007,0.614l3.887,3.8c0.171,0.167,0.43,0.149,0.577-0.039l7.483-9.602C12.724,5.456,12.69,5.182,12.502,5.035z"/></svg></span>
+            Тест
+          </div>
+        </div>
+      </div>
+
+      <!-- Chat 2 -->
+      <div class="chat-item">
+        <div class="chat-avatar">
+          <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+        </div>
+        <div class="chat-info">
+          <div class="chat-info-top">
+            <span class="chat-name">+7 966 355-14-33</span>
+            <span class="chat-time">03:18</span>
+          </div>
+          <div class="chat-preview">
+            <span class="check-icon sent"><svg viewBox="0 0 18 18" fill="none"><path fill="currentColor" d="M17.394,5.035l-0.57-0.444c-0.188-0.147-0.462-0.113-0.609,0.076l-6.39,8.198c-0.147,0.188-0.406,0.206-0.577,0.039l-2.614-2.556c-0.171-0.167-0.447-0.164-0.614,0.007l-0.505,0.516c-0.167,0.171-0.164,0.447,0.007,0.614l3.887,3.8c0.171,0.167,0.43,0.149,0.577-0.039l7.483-9.602C17.617,5.456,17.582,5.182,17.394,5.035z"/></svg></span>
+            Тест
+          </div>
+        </div>
+      </div>
+
+      <!-- Chat 3 - WhatsApp -->
+      <div class="chat-item">
+        <div class="chat-avatar wa">
+          <svg viewBox="0 0 24 24" fill="#FFF" width="28" height="28"><path d="M12 2C6.48 2 2 6.48 2 12c0 1.82.49 3.53 1.34 5L2 22l5.14-1.34A9.94 9.94 0 0012 22c5.52 0 10-4.48 10-10S17.52 2 12 2zm0 18c-1.74 0-3.36-.56-4.68-1.5l-.33-.22-3.06.8.82-2.98-.24-.36A7.95 7.95 0 014 12c0-4.41 3.59-8 8-8s8 3.59 8 8-3.59 8-8 8z"/></svg>
+        </div>
+        <div class="chat-info">
+          <div class="chat-info-top">
+            <span class="chat-name">WhatsApp</span>
+            <span class="chat-time">Четверг</span>
+          </div>
+          <div class="chat-preview">Передайте эмоции голосовым сообщением...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- E2E notice -->
+    <div class="e2e-notice">
+      🔒 Ваши личные сообщения защищены <a href="#">сквозным шифрованием</a>
+    </div>
+
+    <!-- Bottom link -->
+    <div class="bottom-link">
+      <div class="bottom-link-icon">
+        <svg viewBox="0 0 24 24" fill="#FFF"><path d="M12 2C6.48 2 2 6.48 2 12c0 1.82.49 3.53 1.34 5L2 22l5.14-1.34A9.94 9.94 0 0012 22c5.52 0 10-4.48 10-10S17.52 2 12 2z"/></svg>
+      </div>
+      <span class="bottom-link-text">Скачать WhatsApp для Mac</span>
+    </div>
+  </aside>
+
+  <!-- ===== RIGHT PANEL (CHAT) ===== -->
+  <main class="right-panel">
+    <!-- Header -->
+    <div class="right-header">
+      <div class="chat-avatar">
+        <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+      </div>
+      <div class="contact-info">
+        <div class="contact-name">+7 915 085-38-32 (Вы)</div>
+        <div class="contact-status">Сообщение себе</div>
+      </div>
+      <div class="actions">
+        <button class="icon-btn" title="Поиск">
+          <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0016 9.5 6.5 6.5 0 109.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+        </button>
+        <button class="icon-btn" title="Меню">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Chat Area -->
+    <div class="chat-area">
+      <div class="messages">
+        <div class="msg-system">Нажмите, чтобы загрузить старые сообщения с телефона.</div>
+
+        <div class="msg-date">11/12/2025</div>
+
+        <!-- Outgoing -->
+        <div class="msg msg-out">
+          <div class="bubble">
+            <span class="bubble-text">привет</span>
+            <span class="bubble-meta">
+              <span class="bubble-time">02:20</span>
+              <span class="bubble-check"><svg viewBox="0 0 16 11" height="11" width="16" fill="none"><path d="M11.0714 0.652832C10.991 0.585124 10.8894 0.55127 10.7667 0.55127C10.6186 0.55127 10.4916 0.610514 10.3858 0.729004L4.19688 8.36523L1.79112 6.09277C1.7488 6.04622 1.69802 6.01025 1.63877 5.98486C1.57953 5.95947 1.51817 5.94678 1.45469 5.94678C1.32351 5.94678 1.20925 5.99544 1.11192 6.09277L0.800883 6.40381C0.707784 6.49268 0.661235 6.60482 0.661235 6.74023C0.661235 6.87565 0.707784 6.98991 0.800883 7.08301L3.79698 10.0791C3.94509 10.2145 4.11224 10.2822 4.29844 10.2822C4.40424 10.2822 4.5058 10.259 4.60313 10.2124C4.70046 10.1659 4.78086 10.1003 4.84434 10.0156L11.4903 1.59863C11.5623 1.5013 11.5982 1.40186 11.5982 1.30029C11.5982 1.14372 11.5348 1.01888 11.4078 0.925781L11.0714 0.652832ZM8.6212 8.32715C8.43077 8.20866 8.2488 8.09017 8.0753 7.97168C7.99489 7.89128 7.8891 7.85107 7.75791 7.85107C7.6098 7.85107 7.4892 7.90397 7.3961 8.00977L7.10411 8.33984C7.01947 8.43717 6.97715 8.54508 6.97715 8.66357C6.97715 8.79476 7.0237 8.90902 7.1168 9.00635L8.1959 10.0791C8.33132 10.2145 8.49636 10.2822 8.69102 10.2822C8.79681 10.2822 8.89838 10.259 8.99571 10.2124C9.09304 10.1659 9.17556 10.1003 9.24327 10.0156L15.8639 1.62402C15.9358 1.53939 15.9718 1.43994 15.9718 1.32568C15.9718 1.1818 15.9125 1.05697 15.794 0.951172L15.4386 0.678223C15.3582 0.610514 15.2587 0.57666 15.1402 0.57666C14.9964 0.57666 14.8715 0.635905 14.7657 0.754395L8.6212 8.32715Z" fill="currentColor"/></svg></span>
+            </span>
+          </div>
+        </div>
+
+        <div class="msg-date">Сегодня</div>
+
+        <!-- Incoming -->
+        <div class="msg msg-in">
+          <div class="bubble">
+            <span class="bubble-text">Привет</span>
+            <span class="bubble-meta">
+              <span class="bubble-time">05:19</span>
+            </span>
+          </div>
+        </div>
+
+        <!-- Outgoing -->
+        <div class="msg msg-out">
+          <div class="bubble">
+            <span class="bubble-text">Тест сообщения</span>
+            <span class="bubble-meta">
+              <span class="bubble-time">05:19</span>
+              <span class="bubble-check"><svg viewBox="0 0 16 11" height="11" width="16" fill="none"><path d="M11.0714 0.652832C10.991 0.585124 10.8894 0.55127 10.7667 0.55127C10.6186 0.55127 10.4916 0.610514 10.3858 0.729004L4.19688 8.36523L1.79112 6.09277C1.7488 6.04622 1.69802 6.01025 1.63877 5.98486C1.57953 5.95947 1.51817 5.94678 1.45469 5.94678C1.32351 5.94678 1.20925 5.99544 1.11192 6.09277L0.800883 6.40381C0.707784 6.49268 0.661235 6.60482 0.661235 6.74023C0.661235 6.87565 0.707784 6.98991 0.800883 7.08301L3.79698 10.0791C3.94509 10.2145 4.11224 10.2822 4.29844 10.2822C4.40424 10.2822 4.5058 10.259 4.60313 10.2124C4.70046 10.1659 4.78086 10.1003 4.84434 10.0156L11.4903 1.59863C11.5623 1.5013 11.5982 1.40186 11.5982 1.30029C11.5982 1.14372 11.5348 1.01888 11.4078 0.925781L11.0714 0.652832ZM8.6212 8.32715C8.43077 8.20866 8.2488 8.09017 8.0753 7.97168C7.99489 7.89128 7.8891 7.85107 7.75791 7.85107C7.6098 7.85107 7.4892 7.90397 7.3961 8.00977L7.10411 8.33984C7.01947 8.43717 6.97715 8.54508 6.97715 8.66357C6.97715 8.79476 7.0237 8.90902 7.1168 9.00635L8.1959 10.0791C8.33132 10.2145 8.49636 10.2822 8.69102 10.2822C8.79681 10.2822 8.89838 10.259 8.99571 10.2124C9.09304 10.1659 9.17556 10.1003 9.24327 10.0156L15.8639 1.62402C15.9358 1.53939 15.9718 1.43994 15.9718 1.32568C15.9718 1.1818 15.9125 1.05697 15.794 0.951172L15.4386 0.678223C15.3582 0.610514 15.2587 0.57666 15.1402 0.57666C14.9964 0.57666 14.8715 0.635905 14.7657 0.754395L8.6212 8.32715Z" fill="currentColor"/></svg></span>
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Composer -->
+    <div class="composer">
+      <button class="icon-btn" title="Прикрепить">
+        <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+      </button>
+      <button class="icon-btn" title="Эмодзи">
+        <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm3.5-9c.83 0 1.5-.67 1.5-1.5S16.33 8 15.5 8 14 8.67 14 9.5s.67 1.5 1.5 1.5zm-7 0c.83 0 1.5-.67 1.5-1.5S9.33 8 8.5 8 7 8.67 7 9.5 7.67 11 8.5 11zm3.5 6.5c2.33 0 4.31-1.46 5.11-3.5H6.89c.8 2.04 2.78 3.5 5.11 3.5z"/></svg>
+      </button>
+      <div class="composer-input-wrap">
+        <input class="composer-input" type="text" placeholder="Введите сообщение">
+      </div>
+      <button class="icon-btn" title="Голосовое сообщение">
+        <svg viewBox="0 0 24 24"><path d="M12 14c1.66 0 2.99-1.34 2.99-3L15 5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c3.28-.48 6-3.3 6-6.72h-1.7z"/></svg>
+      </button>
+    </div>
+  </main>
+
+</div>
+</body>
+</html>
