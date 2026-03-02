@@ -160,11 +160,11 @@
     padding: 0 12px;
     height: 32px;
     border-radius: 9999px;
-    border: none;
+    border: 1px solid #D4D4D4;
     font-size: 13.3px;
     font-family: inherit;
     cursor: pointer;
-    background: var(--bg-wash-inset);
+    background: transparent;
     color: rgba(0,0,0,.6);
     transition: all .15s;
   }
@@ -172,13 +172,14 @@
   .filter-tab.active {
     background: var(--accent-deemphasized);
     color: var(--accent-emphasized);
+    border-color: transparent;
   }
   .filter-more {
     width: 32px;
     height: 32px;
     border-radius: 50%;
-    border: none;
-    background: var(--bg-wash-inset);
+    border: 1px solid #D4D4D4;
+    background: transparent;
     cursor: pointer;
     display: flex;
     align-items: center;
