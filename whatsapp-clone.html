@@ -511,6 +511,106 @@
     padding: 0 4px;
   }
   .composer-input::placeholder { color: var(--content-deemphasized); }
+
+  /* Emoji Panel */
+  .emoji-panel {
+    display: none;
+    height: 420px;
+    background: #FFFFFF;
+    border-top: 1px solid var(--lines-divider);
+    flex-direction: column;
+    z-index: 10;
+  }
+  .emoji-panel.open { display: flex; }
+  .emoji-tabs {
+    display: flex;
+    padding: 8px 12px 0;
+    gap: 0;
+    border-bottom: 1px solid var(--lines-divider);
+  }
+  .emoji-tab {
+    flex: 1;
+    padding: 8px 0 10px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font-size: 20px;
+    color: var(--content-deemphasized);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-bottom: 2px solid transparent;
+  }
+  .emoji-tab.active { border-bottom-color: var(--accent); color: var(--content-default); }
+  .emoji-tab svg { width: 22px; height: 22px; fill: currentColor; }
+  .emoji-search {
+    padding: 8px 12px;
+  }
+  .emoji-search input {
+    width: 100%;
+    padding: 6px 12px 6px 32px;
+    border-radius: 8px;
+    border: none;
+    background: var(--bg-wash-inset);
+    font-size: 14px;
+    font-family: inherit;
+    color: var(--content-default);
+    outline: none;
+  }
+  .emoji-search input::placeholder { color: var(--content-deemphasized); }
+  .emoji-category-title {
+    padding: 8px 16px 4px;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--content-deemphasized);
+  }
+  .emoji-grid {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0 8px 8px;
+  }
+  .emoji-grid-section {
+    display: grid;
+    grid-template-columns: repeat(9, 1fr);
+    gap: 0;
+  }
+  .emoji-item {
+    width: 100%;
+    aspect-ratio: 1;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font-size: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    transition: background .1s;
+  }
+  .emoji-item:hover { background: var(--surface-highlight); }
+  .emoji-bottom-tabs {
+    display: flex;
+    justify-content: center;
+    padding: 8px;
+    gap: 0;
+    border-top: 1px solid var(--lines-divider);
+  }
+  .emoji-bottom-tab {
+    padding: 6px 20px;
+    border: none;
+    background: transparent;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 14px;
+    color: var(--content-deemphasized);
+    font-family: inherit;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .emoji-bottom-tab.active { background: var(--bg-wash-inset); color: var(--content-default); }
+  .emoji-bottom-tab svg { width: 18px; height: 18px; fill: currentColor; }
+
   .send-btn {
     width: 40px;
     height: 40px;
@@ -714,6 +814,29 @@
       </div>
     </div>
 
+    <!-- Emoji Panel -->
+    <div class="emoji-panel" id="emojiPanel">
+      <div class="emoji-tabs">
+        <button class="emoji-tab active" data-cat="smileys"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="9" cy="10" r="1.2"/><circle cx="15" cy="10" r="1.2"/><path d="M8 14s1.5 2 4 2 4-2 4-2" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+        <button class="emoji-tab" data-cat="animals">🐾</button>
+        <button class="emoji-tab" data-cat="food">🍔</button>
+        <button class="emoji-tab" data-cat="activities">⚽</button>
+        <button class="emoji-tab" data-cat="travel">🚗</button>
+        <button class="emoji-tab" data-cat="objects">💡</button>
+        <button class="emoji-tab" data-cat="symbols">🔣</button>
+        <button class="emoji-tab" data-cat="flags">🏁</button>
+      </div>
+      <div class="emoji-search">
+        <input type="text" placeholder="Поиск эмодзи" id="emojiSearch">
+      </div>
+      <div class="emoji-grid" id="emojiGrid"></div>
+      <div class="emoji-bottom-tabs">
+        <button class="emoji-bottom-tab active"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="9" cy="10" r="1.2"/><circle cx="15" cy="10" r="1.2"/><path d="M8 14s1.5 2 4 2 4-2 4-2" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+        <button class="emoji-bottom-tab">GIF</button>
+        <button class="emoji-bottom-tab"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/><path d="M13 7h-2v6l5.25 3.15.75-1.23-4-2.42z"/></svg></button>
+      </div>
+    </div>
+
     <!-- Composer -->
     <div class="composer">
       <div class="composer-input-wrap">
@@ -747,6 +870,74 @@ input.addEventListener('input', () => {
     micBtn.style.display = 'flex';
     sendBtn.style.display = 'none';
   }
+});
+
+// Emoji data
+const emojiData = {
+  smileys: { title: 'Смайлики и люди', emojis: '😀😃😄😁😆🤣😂🙂🙃😉😊😇🥰😍🤩😘😗😚😙🥲😋😛😜🤪😝🤑🤗🤭🫢🫣🤫🤔🫡🤐🤨😐😑😶🫥😏😒🙄😬🤥🫨😌😔😪🤤😴😷🤒🤕🤢🤮🤧🥵🥶🥴😵🤯🤠🥳🥸😎🤓🧐😕🫤😟🙁😮😯😲😳🥺🥹😦😧😨😰😥😢😭😱😖😣😞😓😩😫🥱😤😡😠🤬😈👿💀☠️💩🤡👹👺👻👽👾🤖😺😸😹😻😼😽🙀😿😾🙈🙉🙊' },
+  animals: { title: 'Животные и природа', emojis: '🐶🐱🐭🐹🐰🦊🐻🐼🐻‍❄️🐨🐯🦁🐮🐷🐽🐸🐵🙈🙉🙊🐒🐔🐧🐦🐤🐣🐥🦆🦅🦉🦇🐺🐗🐴🦄🐝🪱🐛🦋🐌🐞🐜🪰🪲🪳🦟🦗🕷️🦂🐢🐍🦎🦖🦕🐙🦑🦐🦞🦀🪸🐡🐠🐟🐬🐳🐋🦈🐊🐅🐆🦓🦍🦧🐘🦛🦏🐪🐫🦒🦘🐃🐂🐄🐎🐖🐏🐑🦙🐐🦌🐕🐩🦮🐕‍🦺🐈🐈‍⬛🪶🐓🦃🦤🦚🦜🦢🦩🕊️🐇🦝🦨🦡🦫🦦🦥🐁🐀🐿️🦔🐾🐉🐲🌵🎄🌲🌳🌴🪹🌱🌿🍀🎍🪴🎋🍃🍂🍁🪺🌾🌺🌻🌹🥀🌷🪻🌼🌸💐🍄🌰🎃' },
+  food: { title: 'Еда и напитки', emojis: '🍇🍈🍉🍊🍋🍌🍍🥭🍎🍏🍐🍑🍒🍓🫐🥝🍅🫒🥥🥑🍆🥔🥕🌽🌶️🫑🥒🥬🥦🧄🧅🍄🥜🫘🌰🍞🥐🥖🫓🥨🥯🥞🧇🧀🍖🍗🥩🥓🍔🍟🍕🌭🥪🌮🌯🫔🥙🧆🥚🍳🥘🍲🫕🥣🥗🍿🧈🧂🥫🍱🍘🍙🍚🍛🍜🍝🍠🍢🍣🍤🍥🥮🍡🥟🥠🥡🦀🦞🦐🦑🦪🍦🍧🍨🍩🍪🎂🍰🧁🥧🍫🍬🍭🍮🍯🍼🥛☕🫖🍵🍶🍾🍷🍸🍹🍺🍻🥂🥃🫗🥤🧋🧃🧉🧊🥢🍽️🍴🥄' },
+  activities: { title: 'Активности', emojis: '⚽🏀🏈⚾🥎🎾🏐🏉🥏🎱🪀🏓🏸🏒🏑🥍🏏🪃🥅⛳🪁🏹🎣🤿🥊🥋🎽🛹🛼🛷⛸️🥌🎿⛷️🏂🪂🏋️🤼🤸⛹️🤺🤾🏌️🏇🧘🏄🏊🤽🚣🧗🚵🚴🏆🥇🥈🥉🏅🎖️🏵️🎗️🎫🎟️🎪🤹🎭🩰🎨🎬🎤🎧🎼🎹🥁🪘🎷🎺🎸🪕🎻🪗🎲♟️🎯🎳🎮🎰🧩' },
+  travel: { title: 'Путешествия', emojis: '🚗🚕🚙🚌🚎🏎️🚓🚑🚒🚐🛻🚚🚛🚜🦯🦽🦼🛴🚲🛵🏍️🛺🚨🚔🚍🚘🚖🛞🚡🚠🚟🚃🚋🚞🚝🚄🚅🚈🚂🚆🚇🚊🚉✈️🛫🛬🛩️💺🛰️🚀🛸🚁🛶⛵🚤🛥️🛳️⛴️🚢🗽🗼🏰🏯🏟️🎡🎢🎠⛲⛱️🏖️🏝️🏜️🌋⛰️🏔️🗻🏕️⛺🛖🏠🏡🏘️🏚️🏗️🏭🏢🏬🏣🏤🏥🏦🏨🏪🏫🏩💒🏛️⛪🕌🕍🛕🕋⛩️🗾🎑🏞️🌅🌄🌠🎇🎆🌇🌆🏙️🌃🌌🌉🌁' },
+  objects: { title: 'Объекты', emojis: '⌚📱📲💻⌨️🖥️🖨️🖱️🖲️🕹️🗜️💽💾💿📀📼📷📸📹🎥📽️🎞️📞☎️📟📠📺📻🎙️🎚️🎛️🧭⏱️⏲️⏰🕰️⌛⏳📡🔋🪫🔌💡🔦🕯️🪔🧯🛢️💸💵💴💶💷🪙💰💳💎⚖️🪜🧰🪛🔧🔩⚙️🪤🧲🔫💣🪓🔪🗡️⚔️🛡️🚬⚰️🪦⚱️🏺🔮📿🧿🪬💈⚗️🔭🔬🕳️🩹🩺🩻🩼💊💉🩸🧬🦠🧫🧪🌡️🧹🪠🧺🧻🚽🚰🚿🛁🛀🧼🪥🪒🧽🪣🧴🔑🗝️🚪🪑🛋️🛏️🛌🧸🪆🖼️🪞🪟🛍️🛒🎁🎈🎏🎀🪄🪅🎊🎉🎎🏮🎐🧧✉️📩📨📧💌📥📤📦🏷️🪧📪📫📬📭📮📯📜📃📄📑🧾📊📈📉🗒️🗓️📆📅🗑️📇🗃️🗳️🗄️📋📁📂🗂️🗞️📰📓📔📒📕📗📘📙📚📖🔖🧷🔗📎🖇️📐📏🧮📌📍✂️🖊️🖋️✒️🖌️🖍️📝✏️🔍🔎🔏🔐🔒🔓' },
+  symbols: { title: 'Символы', emojis: '❤️🧡💛💚💙💜🖤🤍🤎💔❤️‍🔥❤️‍🩹❣️💕💞💓💗💖💘💝💟☮️✝️☪️🕉️☸️✡️🔯🕎☯️☦️🛐⛎♈♉♊♋♌♍♎♏♐♑♒♓🆔⚛️🉑☢️☣️📴📳🈶🈚🈸🈺🈷️✴️🆚💮🉐㊙️㊗️🈴🈵🈹🈲🅰️🅱️🆎🆑🅾️🆘❌⭕🛑⛔📛🚫💯💢♨️🚷🚯🚳🚱🔞📵🚭❗❕❓❔‼️⁉️🔅🔆〽️⚠️🚸🔱⚜️🔰♻️✅🈯💹❇️✳️❎🌐💠Ⓜ️🌀💤🏧🚾♿🅿️🛗🈳🈂️🛂🛃🛄🛅🚹🚺🚻🚼🚮🎦📶🈁🔣ℹ️🔤🔡🔠🆖🆗🆙🆒🆕🆓0️⃣1️⃣2️⃣3️⃣4️⃣5️⃣6️⃣7️⃣8️⃣9️⃣🔟🔢#️⃣*️⃣⏏️▶️⏸️⏯️⏹️⏺️⏭️⏮️⏩⏪⏫⏬◀️🔼🔽➡️⬅️⬆️⬇️↗️↘️↙️↖️↕️↔️↪️↩️⤴️⤵️🔀🔁🔂🔄🔃🎵🎶➕➖➗✖️🟰♾️💲💱™️©️®️👁️‍🗨️🔚🔙🔛🔝🔜〰️➰➿✔️☑️🔘🔴🟠🟡🟢🔵🟣⚫⚪🟤🔺🔻🔸🔹🔶🔷🔳🔲▪️▫️◾◽◼️◻️🟥🟧🟨🟩🟦🟪⬛⬜🟫🔈🔇🔉🔊🔔🔕📣📢' },
+  flags: { title: 'Флаги', emojis: '🏳️🏴🏴‍☠️🏁🚩🏳️‍🌈🏳️‍⚧️🇺🇳🇦🇫🇦🇽🇦🇱🇩🇿🇦🇸🇦🇩🇦🇴🇦🇮🇦🇶🇦🇬🇦🇷🇦🇲🇦🇼🇦🇺🇦🇹🇦🇿🇧🇸🇧🇭🇧🇩🇧🇧🇧🇾🇧🇪🇧🇿🇧🇯🇧🇲🇧🇹🇧🇴🇧🇦🇧🇼🇧🇷🇮🇴🇻🇬🇧🇳🇧🇬🇧🇫🇧🇮🇰🇭🇨🇲🇨🇦🇮🇨🇨🇻🇧🇶🇰🇾🇨🇫🇹🇩🇨🇱🇨🇳🇨🇽🇨🇨🇨🇴🇰🇲🇨🇬🇨🇩🇨🇰🇨🇷🇨🇮🇭🇷🇨🇺🇨🇼🇨🇾🇨🇿🇩🇰🇩🇯🇩🇲🇩🇴🇪🇨🇪🇬🇸🇻🇬🇶🇪🇷🇪🇪🇸🇿🇪🇹🇪🇺🇫🇰🇫🇴🇫🇯🇫🇮🇫🇷🇬🇫🇵🇫🇹🇫🇬🇦🇬🇲🇬🇪🇩🇪🇬🇭🇬🇮🇬🇷🇬🇱🇬🇩🇬🇵🇬🇺🇬🇹🇬🇬🇬🇳🇬🇼🇬🇾🇭🇹🇭🇳🇭🇰🇭🇺🇮🇸🇮🇳🇮🇩🇮🇷🇮🇶🇮🇪🇮🇲🇮🇱🇮🇹🇯🇲🇯🇵🎌🇯🇪🇯🇴🇰🇿🇰🇪🇰🇮🇽🇰🇰🇼🇰🇬🇱🇦🇱🇻🇱🇧🇱🇸🇱🇷🇱🇾🇱🇮🇱🇹🇱🇺🇲🇴🇲🇬🇲🇼🇲🇾🇲🇻🇲🇱🇲🇹🇲🇭🇲🇶🇲🇷🇲🇺🇾🇹🇲🇽🇫🇲🇲🇩🇲🇨🇲🇳🇲🇪🇲🇸🇲🇦🇲🇿🇲🇲🇳🇦🇳🇷🇳🇵🇳🇱🇳🇨🇳🇿🇳🇮🇳🇪🇳🇬🇳🇺🇳🇫🇰🇵🇲🇰🇲🇵🇳🇴🇴🇲🇵🇰🇵🇼🇵🇸🇵🇦🇵🇬🇵🇾🇵🇪🇵🇭🇵🇳🇵🇱🇵🇹🇵🇷🇶🇦🇷🇪🇷🇴🇷🇺🇷🇼' }
+};
+
+// Render emoji grid
+function renderEmojis(category) {
+  const grid = document.getElementById('emojiGrid');
+  const data = emojiData[category];
+  const emojis = [...data.emojis].filter(c => c !== '\uFE0F' && c !== '\u200D' && c !== '\u20E3');
+  // Split into actual emoji characters
+  const emojiList = data.emojis.match(/\p{Emoji_Presentation}(\u200D\p{Emoji_Presentation})*/gu) || [...data.emojis].filter(c => c.match(/\p{Emoji}/u) && !c.match(/[0-9#*]/));
+
+  grid.innerHTML = `<div class="emoji-category-title">${data.title}</div><div class="emoji-grid-section">${emojiList.map(e => `<button class="emoji-item" data-emoji="${e}">${e}</button>`).join('')}</div>`;
+}
+
+// Init
+renderEmojis('smileys');
+
+// Tab clicks
+document.querySelectorAll('.emoji-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.emoji-tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    renderEmojis(tab.dataset.cat);
+  });
+});
+
+// Emoji click -> insert into input
+document.getElementById('emojiGrid').addEventListener('click', (e) => {
+  const btn = e.target.closest('.emoji-item');
+  if (btn) {
+    input.value += btn.dataset.emoji;
+    input.dispatchEvent(new Event('input'));
+    input.focus();
+  }
+});
+
+// Toggle emoji panel
+document.querySelector('.composer .icon-btn[title="Эмодзи"]').addEventListener('click', () => {
+  document.getElementById('emojiPanel').classList.toggle('open');
+});
+
+// Close panel when clicking input
+input.addEventListener('focus', () => {
+  // keep panel open
+});
+
+// Search
+document.getElementById('emojiSearch').addEventListener('input', (e) => {
+  const q = e.target.value.toLowerCase();
+  if (!q) { renderEmojis(document.querySelector('.emoji-tab.active').dataset.cat); return; }
+  const grid = document.getElementById('emojiGrid');
+  let all = [];
+  Object.values(emojiData).forEach(d => {
+    const list = d.emojis.match(/\p{Emoji_Presentation}(\u200D\p{Emoji_Presentation})*/gu) || [];
+    all = all.concat(list);
+  });
+  grid.innerHTML = `<div class="emoji-category-title">Результаты поиска</div><div class="emoji-grid-section">${all.map(e => `<button class="emoji-item" data-emoji="${e}">${e}</button>`).join('')}</div>`;
 });
 </script>
 </body>
